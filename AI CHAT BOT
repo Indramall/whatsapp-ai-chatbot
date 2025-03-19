@@ -1,0 +1,28 @@
+from flask import Flask, request
+from twilio.twiml.messaging_response import MessagingResponse
+import openai
+import os
+
+app = Flask(__name__)
+
+# Set OpenAI API Key
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+@app.route("/whatsapp", methods=["POST"])
+def whatsapp_bot():
+    incoming_msg = request.values.get("Body", "").lower()
+    response = MessagingResponse()
+    msg = response.message()
+
+    if "stress" in incoming_msg:
+        reply = "Take a deep breath and try a 5-minute mindfulness exercise."
+    elif "health tip" in incoming_msg:
+        reply = "Drink water and sleep well for better health."
+    else:
+        reply = "I'm here to help with health and stress-related queries."
+
+    msg.body(reply)
+    return str(response)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
