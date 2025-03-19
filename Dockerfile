@@ -5,10 +5,13 @@ FROM python:3.9
 WORKDIR /app
 
 # Copy the current directory contents into the container
-COPY . .
+COPY . /app/
 
-# Install any dependencies
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the application
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "whatsapp_ai_chatbot:app"]
+# Expose the port that the app runs on
+EXPOSE 5000
+
+# Command to run the application
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
