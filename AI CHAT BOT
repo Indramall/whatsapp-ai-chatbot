@@ -5,24 +5,36 @@ import os
 
 app = Flask(__name__)
 
-# Set OpenAI API Key
+# Set up OpenAI API Key from environment variables
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route("/whatsapp", methods=["POST"])
 def whatsapp_bot():
     incoming_msg = request.values.get("Body", "").lower()
+    
     response = MessagingResponse()
     msg = response.message()
-
+    
     if "stress" in incoming_msg:
-        reply = "Take a deep breath and try a 5-minute mindfulness exercise."
+        reply = "Take a deep breath and try this 5-minute mindfulness exercise: Inhale for 4 seconds, hold for 4 seconds, and exhale for 4 seconds. Repeat 5 times."
     elif "health tip" in incoming_msg:
-        reply = "Drink water and sleep well for better health."
+        reply = "Drink plenty of water, take short breaks, and get at least 7 hours of sleep for better health."
+    elif "meditation" in incoming_msg:
+        reply = "Try this simple meditation: Close your eyes, focus on your breath, and let go of any thoughts for 5 minutes."
+    elif "subscription" in incoming_msg:
+        reply = "We offer premium stress management plans for just ₹299/month. Reply 'JOIN' to subscribe!"
     else:
-        reply = "I'm here to help with health and stress-related queries."
-
+        # Use OpenAI to generate a response for general queries
+        try:
+            reply = openai.ChatCompletion.create(
+                model="gpt-4",
+                messages=[{"role": "user", "content": incoming_msg}]
+            )["choices"][0]["message"]["content"]
+        except Exception as e:
+            reply = "I'm currently experiencing technical issues. Please try again later."
+    
     msg.body(reply)
     return str(response)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
