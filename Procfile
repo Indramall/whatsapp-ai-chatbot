@@ -1,1 +1,1 @@
-                        web: gunicorn whatsapp_ai_chatbot:app
+web: gunicorn app:app
