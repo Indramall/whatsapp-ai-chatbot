@@ -1,17 +1,20 @@
-# Use an official Python runtime as a parent image
+# Use Python 3.9 as the base image
 FROM python:3.9
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the current directory contents into the container
+# Copy the project files
 COPY . /app/
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port that the app runs on
+# Expose the application port
 EXPOSE 5000
 
-# Command to run the application
+# Set environment variables (modify if needed)
+ENV OPENAI_API_KEY="your-api-key-here"
+
+# Run the application with Gunicorn
 CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
